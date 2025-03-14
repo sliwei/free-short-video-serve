@@ -1,0 +1,105 @@
+我有如下文件，写一个js脚本，将文件按照文件名进行分类，生成如下结果,poster为文件夹下的第一个图片文件，videos需安装顺序排列，保存为一个json文件
+[
+  {
+    title: 'v1',
+    number: 3,
+    poster: '/v1/0.png',
+    videos: [
+      {
+        url: '/v1/1.mp4',
+        title: '1',
+      },
+      {
+        url: '/v1/2.mp4',
+        title: '2',
+      },
+      {
+        url: '/v1/3.mp4',
+        title: '3',
+      },
+    ],
+  },
+  {
+    title: 'v2',
+    number: 3,
+    poster: '/v2/0.png',
+    videos: [
+      {
+        url: '/v2/1.mp4',
+        title: '1',
+      },
+      {
+        url: '/v2/2.mp4',
+        title: '2',
+      },
+      {
+        url: '/v2/3.mp4',
+        title: '3',
+      },
+    ],
+  },
+]
+public/v1/0.png
+public/v1/1.mp4
+public/v1/2.mp4
+public/v1/3.mp4
+public/v2/0.png
+public/v2/1.mp4
+public/v2/2.mp4
+public/v2/3.mp4
+
+在另外一个js里面读取这个json，参数是匹配title，然后再根据page和num返回videos里面对应的数据，最后组合成如下数据结构  {
+    "title": "洪父齐天",
+    "number": 64,
+    "poster": "/洪父齐天/0.jpg",
+    "videos": [
+      {
+        "url": "/洪父齐天/000.mp4",
+        "title": "000"
+      },
+      {
+        "url": "/洪父齐天/1.mp4",
+        "title": "1"
+      },
+      {
+        "url": "/洪父齐天/2.mp4",
+        "title": "2"
+      },
+      {
+        "url": "/洪父齐天/3.mp4",
+        "title": "3"
+      },
+      {
+        "url": "/洪父齐天/4.mp4",
+        "title": "4"
+      },
+    ]
+
+我有如下文件，写一个js脚本，生成如下结果,title是文件夹名称，number是文件夹下的视频数量，poster为文件夹下的一个图片文件不限制后缀,indexTitle当前视频的下标，indexTitle为当前视频的名称，顺序打乱，保存为一个json文件
+[
+  {
+    title: 'v1',
+    number: 3,
+    index: 2,
+    indexTitle: '2',
+    poster: '/v1/0.png',
+    url: '/v1/2.mp4',
+  },
+  {
+    title: 'v2',
+    number: 3,
+    index: 1,
+    indexTitle: '1',
+    poster: '/v1/0.png',
+    url: '/v1/1.mp4',
+  },
+  
+]
+public/v1/0.png
+public/v1/1.mp4
+public/v1/2.mp4
+public/v1/3.mp4
+public/v2/0.png
+public/v2/1.mp4
+public/v2/2.mp4
+public/v2/3.mp4

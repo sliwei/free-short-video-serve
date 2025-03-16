@@ -1,40 +1,40 @@
 import path from 'path'
-import { debounce, getDirectories, getFiles, isImageFile, shuffleArray } from '../tool'
+import { debounce, traverseDirectory, getFiles, isImageFile, shuffleArray } from '../tool'
 
 export const init = debounce(() => {
-  const baseDir = '/Users/awei/Desktop/video'
-  const directories = getDirectories(baseDir)
+  const baseDir = process.env.VIDEO_PATH
+  const directories = traverseDirectory(baseDir)
+  // console.log('directories', directories)
+  // const result = directories.map((dir) => {
+  //   const dirPath = path.join(baseDir, dir)
+  //   const files = getFiles(dirPath)
 
-  const result = directories.map((dir) => {
-    const dirPath = path.join(baseDir, dir)
-    const files = getFiles(dirPath)
+  //   // 获取海报文件
+  //   const poster = files.find((file) => isImageFile(file))
 
-    // 获取海报文件
-    const poster = files.find((file) => isImageFile(file))
+  //   // 获取视频文件并排序
+  //   const videos = files
+  //     .filter((file) => file.endsWith('.mp4'))
+  //     .sort((a, b) => {
+  //       const numA = parseInt(a.split('.')[0], 10)
+  //       const numB = parseInt(b.split('.')[0], 10)
+  //       return numA - numB
+  //     })
+  //     .map((file) => ({
+  //       url: `/${dir}/${file}`,
+  //       title: file.split('.')[0]
+  //     }))
 
-    // 获取视频文件并排序
-    const videos = files
-      .filter((file) => file.endsWith('.mp4'))
-      .sort((a, b) => {
-        const numA = parseInt(a.split('.')[0], 10)
-        const numB = parseInt(b.split('.')[0], 10)
-        return numA - numB
-      })
-      .map((file) => ({
-        url: `/${dir}/${file}`,
-        title: file.split('.')[0]
-      }))
+  //   return {
+  //     title: dir,
+  //     number: videos.length,
+  //     poster: `/${dir}/${poster}`,
+  //     videos
+  //   }
+  // })
 
-    return {
-      title: dir,
-      number: videos.length,
-      poster: `/${dir}/${poster}`,
-      videos
-    }
-  })
-
-  // 将结果存储到全局变量
-  global.data = result
+  // // 将结果存储到全局变量
+  // global.data = result
 
   let result2 = []
 
@@ -55,7 +55,7 @@ export const init = debounce(() => {
         poster: `/${dir}/${poster}`,
         url: `/${dir}/${file}`
       }))
-
+    console.log('init', dir, videos2.length)
     // 添加视频文件到结果列表
     result2 = result2.concat(videos2)
   })

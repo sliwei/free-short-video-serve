@@ -22,9 +22,9 @@ global.data = []
 global.data2 = []
 
 // @ts-ignore
-chokidar.watch('/Users/awei/Desktop/video').on('all', (event) => {
-  init()
-})
+// chokidar.watch(process.env.VIDEO_PATH).on('all', (event) => {
+init()
+// })
 
 const app = new Koa()
 
@@ -66,7 +66,7 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
   await next()
   if (ctx.path.endsWith('.mp4')) {
-    let file = '/Users/awei/Desktop/video' + decodeURIComponent(ctx.path)
+    let file = process.env.VIDEO_PATH + decodeURIComponent(ctx.path)
     let stat = fs.statSync(file)
     let fileSize = stat.size
     let range = ctx.header.range

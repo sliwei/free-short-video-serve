@@ -48,6 +48,25 @@ export const getDirectories = (source) =>
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name)
 
+// 遍历文件夹
+export function traverseDirectory(dir, parentPath = '') {
+  const results = []
+  const files = fs.readdirSync(dir)
+
+  files.forEach((file) => {
+    const fullPath = path.join(dir, file)
+    const relativePath = parentPath ? `${parentPath}/${file}` : file
+    const stats = fs.statSync(fullPath)
+
+    if (stats.isDirectory()) {
+      results.push(relativePath)
+      results.push(...traverseDirectory(fullPath, relativePath))
+    }
+  })
+
+  return results
+}
+
 // 获取文件列表
 export const getFiles = (source) =>
   fs

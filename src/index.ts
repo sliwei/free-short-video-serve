@@ -17,6 +17,7 @@ import * as logs from './utils/log4js'
 import fs from 'fs'
 import chokidar from 'chokidar'
 import { init } from './utils/videoInit'
+import { getContentType, videoExtensions } from './utils/tool'
 
 global.data = []
 global.data2 = []
@@ -65,27 +66,33 @@ app.use(async (ctx, next) => {
 
 app.use(async (ctx, next) => {
   await next()
-  if (ctx.path.endsWith('.mp4')) {
+  if (videoExtensions.some((format) => ctx.path.endsWith(format))) {
     let file = process.env.VIDEO_PATH + decodeURIComponent(ctx.path)
-    let stat = fs.statSync(file)
-    let fileSize = stat.size
-    let range = ctx.header.range
-    if (range) {
-      let parts = range.replace(/bytes=/, '').split('-')
-      let start = parseInt(parts[0], 10)
-      let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
-      let chunksize = end - start + 1
-      ctx.status = 206
-      ctx.set('Content-Range', `bytes ${start}-${end}/${fileSize}`)
-      ctx.set('Accept-Ranges', 'bytes')
-      ctx.set('Content-Length', chunksize.toString())
-      ctx.set('Content-Type', 'video/mp4')
-      ctx.body = fs.createReadStream(file, { start, end })
-    } else {
-      ctx.status = 200
-      ctx.set('Content-Length', fileSize.toString())
-      ctx.set('Content-Type', 'video/mp4')
-      ctx.body = fs.createReadStream(file)
+    try {
+      let stat = fs.statSync(file)
+      let fileSize = stat.size
+      let range = ctx.header.range
+      if (range) {
+        let parts = range.replace(/bytes=/, '').split('-')
+        let start = parseInt(parts[0], 10)
+        let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
+        let chunksize = end - start + 1
+        ctx.status = 206
+        ctx.set('Content-Range', `bytes ${start}-${end}/${fileSize}`)
+        ctx.set('Accept-Ranges', 'bytes')
+        ctx.set('Content-Length', chunksize.toString())
+        ctx.set('Content-Type', getContentType(ctx.path))
+        ctx.body = fs.createReadStream(file, { start, end })
+      } else {
+        ctx.status = 200
+        ctx.set('Content-Length', fileSize.toString())
+        ctx.set('Content-Type', getContentType(ctx.path))
+        ctx.body = fs.createReadStream(file)
+      }
+    } catch (error) {
+      console.error('Error reading file:', error)
+      ctx.status = 500
+      ctx.body = 'Internal Server Error'
     }
   }
 })

@@ -119,3 +119,43 @@ export const throttle = (callback: { apply: (arg0: undefined, arg1: any[]) => vo
     }
   }
 }
+
+export const videoExtensions = ['.avi', '.mp4', '.wmv', '.mkv', '.mov', '.rm', '.3gp', '.flv', '.gif', '.mpg', '.rmvb', '.swf', '.vob', '.ts', '.m3u8']
+
+export const getContentType = (path) => {
+  const ext = path.split('.').pop().toLowerCase()
+  switch (ext) {
+    case 'avi':
+      return 'video/x-msvideo'
+    case 'mp4':
+      return 'video/mp4'
+    case 'wmv':
+      return 'video/x-ms-wmv'
+    case 'mkv':
+      return 'video/x-matroska'
+    case 'mov':
+      return 'video/quicktime'
+    case 'rm':
+      return 'application/vnd.rn-realmedia'
+    case '3gp':
+      return 'video/3gpp'
+    case 'flv':
+      return 'video/x-flv'
+    case 'gif':
+      return 'image/gif'
+    case 'mpg':
+      return 'video/mpeg'
+    case 'rmvb':
+      return 'application/vnd.rn-realmedia-vbr'
+    case 'swf':
+      return 'application/x-shockwave-flash'
+    case 'vob':
+      return 'video/dvd'
+    case 'ts':
+      return 'video/MP2T'
+    case 'm3u8':
+      return 'application/vnd.apple.mpegurl'
+    default:
+      return 'application/octet-stream'
+  }
+}

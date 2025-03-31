@@ -1,40 +1,38 @@
 import path from 'path'
-import { debounce, traverseDirectory, getFiles, isImageFile, shuffleArray } from '../tool'
+import { debounce, traverseDirectory, getFiles, isImageFile, shuffleArray, videoExtensions } from '../tool'
+
+// 判断文件是否为 M3U8 的 TS 数据文件
+function isM3U8TS(dirPath, file) {
+  const m3u8Files = getFiles(dirPath).filter((f) => f.toLowerCase().endsWith('.m3u8'))
+  for (const m3u8File of m3u8Files) {
+    const m3u8Path = path.join(dirPath, m3u8File)
+    try {
+      const fs = require('fs')
+      const m3u8Content = fs.readFileSync(m3u8Path, 'utf-8').toLowerCase()
+      if (m3u8Content.includes(file.toLowerCase())) {
+        return true
+      }
+    } catch (error) {
+      console.error(`读取 M3U8 文件 ${m3u8Path} 时出错:`, error)
+    }
+  }
+  return false
+}
+
+// 过滤视频文件的函数
+function filterVideoFiles(files, dirPath) {
+  return files.filter((file) => {
+    const ext = path.extname(file).toLowerCase()
+    if (ext === '.ts' && isM3U8TS(dirPath, file)) {
+      return false
+    }
+    return videoExtensions.includes(ext)
+  })
+}
 
 export const init = debounce(() => {
   const baseDir = process.env.VIDEO_PATH
   const directories = traverseDirectory(baseDir)
-  // console.log('directories', directories)
-  // const result = directories.map((dir) => {
-  //   const dirPath = path.join(baseDir, dir)
-  //   const files = getFiles(dirPath)
-
-  //   // 获取海报文件
-  //   const poster = files.find((file) => isImageFile(file))
-
-  //   // 获取视频文件并排序
-  //   const videos = files
-  //     .filter((file) => file.endsWith('.mp4'))
-  //     .sort((a, b) => {
-  //       const numA = parseInt(a.split('.')[0], 10)
-  //       const numB = parseInt(b.split('.')[0], 10)
-  //       return numA - numB
-  //     })
-  //     .map((file) => ({
-  //       url: `/${dir}/${file}`,
-  //       title: file.split('.')[0]
-  //     }))
-
-  //   return {
-  //     title: dir,
-  //     number: videos.length,
-  //     poster: `/${dir}/${poster}`,
-  //     videos
-  //   }
-  // })
-
-  // // 将结果存储到全局变量
-  // global.data = result
 
   let result2 = []
 
@@ -46,15 +44,19 @@ export const init = debounce(() => {
     const poster = files.find((file) => isImageFile(file))
 
     // 获取视频文件
-    const videos2 = files
-      .filter((file) => file.endsWith('.mp4'))
-      .map((file) => ({
+    const videoFiles = filterVideoFiles(files, dirPath)
+    const videos2 = videoFiles.map((file) => {
+      const ext = path.extname(file).toLowerCase()
+      return {
         title: dir,
-        number: files.filter((f) => f.endsWith('.mp4')).length,
+        type: ext.slice(1), // 去掉扩展名前面的点，作为 type 字段的值
+        number: videoFiles.length,
         indexTitle: file.split('.')[0],
         poster: `/${dir}/${poster}`,
         url: `/${dir}/${file}`
-      }))
+      }
+    })
+
     console.log('init', dir, videos2.length)
     // 添加视频文件到结果列表
     result2 = result2.concat(videos2)
